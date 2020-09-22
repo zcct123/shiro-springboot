@@ -5,6 +5,7 @@ import com.zc.shirospringboot.model.UserSys;
 import com.zc.shirospringboot.service.UserService;
 import com.zc.shirospringboot.service.UserServiceImpl;
 import com.zc.shirospringboot.until.ApplicationContextUntil;
+import com.zc.shirospringboot.until.ByteSourceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -18,9 +19,10 @@ import org.apache.shiro.util.ByteSource;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
+import java.io.Serializable;
 
 @Slf4j
-public class CustomerRealm extends AuthorizingRealm {
+public class CustomerRealm extends AuthorizingRealm  {
 
     @Resource
     UserService userService;
@@ -39,8 +41,8 @@ public class CustomerRealm extends AuthorizingRealm {
 
             //添加身份
             simpleAuthorizationInfo.addRole("admin");
-          //  simpleAuthorizationInfo.addRole("user");
-            //simpleAuthorizationInfo.add
+            simpleAuthorizationInfo.addRole("user");
+            simpleAuthorizationInfo.addStringPermission("user:create:*");
         return  simpleAuthorizationInfo;
         }
 
@@ -58,7 +60,7 @@ public class CustomerRealm extends AuthorizingRealm {
         if(!ObjectUtils.isEmpty(userSys))
         {
             SimpleAuthenticationInfo simpleAuthenticationInfo = new SimpleAuthenticationInfo(userSys,userSys.getPassword()
-                    , ByteSource.Util.bytes(userSys.getBz1()),this.getName());
+                    , ByteSourceUtils.bytes(userSys.getBz1()),this.getName());
             return simpleAuthenticationInfo;
 
         }

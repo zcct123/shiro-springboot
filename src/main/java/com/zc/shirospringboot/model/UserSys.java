@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+
 /**
  * Created bywintec on 2020/9/22
  */
@@ -12,7 +14,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class UserSys {
+public class UserSys implements Serializable {
     @Override
     public String toString() {
         return "UserSys{" +

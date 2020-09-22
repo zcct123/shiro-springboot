@@ -11,6 +11,17 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://118.190.154.130:3306/shiro?
+  redis:
+    host: 118.190.154.130
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 500
+        min-idle: 0
+      lettuce:
+        shutdown-timeout: 0
 server:
   port: 80
   servlet:
@@ -23,3 +34,4 @@ mybatis:
 logging:
   level:
     com.zc.shirospringboot.mapper: debug
+

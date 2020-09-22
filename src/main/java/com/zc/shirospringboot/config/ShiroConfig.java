@@ -5,7 +5,12 @@ import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +23,11 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
+    @Value("${spring.redis.host}")
+    String host;
 
+    @Value("${spring.redis.port}")
+    String port;
     @Bean
     public ShiroFilterFactoryBean getShiroFilterFactoryBean(DefaultWebSecurityManager defaultWebSecurityManager)
     {
@@ -46,6 +55,7 @@ public class ShiroConfig {
     @Bean
     public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("ream1") Realm realm1){
         DefaultWebSecurityManager defaultWebSecurityManager = new DefaultWebSecurityManager();
+        defaultWebSecurityManager.setCacheManager(cacheManager());
         defaultWebSecurityManager.setRealm(realm1);
         //给安全模拟器设置realm
         return  defaultWebSecurityManager;
@@ -62,6 +72,52 @@ public class ShiroConfig {
         //设置散列次数
         credentialsMatcher.setHashIterations(1024);
         customerRealm.setCredentialsMatcher(credentialsMatcher);
+
+        //开启缓存管理  ehCache
+        //customerRealm.setCacheManager(new EhCacheManager());
+        //开启全局缓存
+        customerRealm.setCachingEnabled(true);
+        //开启认证缓存
+        customerRealm.setAuthenticationCachingEnabled(true);
+
+        //设置缓存名字
+        customerRealm.setAuthenticationCacheName("authenticationCache");
+        //开启授权缓存
+        customerRealm.setAuthorizationCachingEnabled(true);
+        //设置缓存名字
+        customerRealm.setAuthorizationCacheName("authorizationCach");
         return customerRealm;
+
+
+
+    }
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(host);
+        redisManager.setPort(6379);
+        // 配置过期时间
+        redisManager.setExpire(1800);
+        return redisManager;
+    }
+
+    public RedisCacheManager cacheManager() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        return redisCacheManager;
+    }
+
+    public RedisSessionDAO redisSessionDAO() {
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(redisManager());
+        return redisSessionDAO;
+    }
+
+    /**
+     * sessionManager
+     */
+    public DefaultWebSessionManager SessionManager() {
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        sessionManager.setSessionDAO(redisSessionDAO());
+        return sessionManager;
     }
 }
