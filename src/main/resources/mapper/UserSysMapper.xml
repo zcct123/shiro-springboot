@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zc.shirospringboot.mapper.UserSysMapper">
+
+    <insert id="add">
+        insert  into user_sys  (username,password,bz1)
+        values (#{entity.username},#{entity.password},#{entity.bz1})
+    </insert>
+
+    <select id="findByUsername" resultType="com.zc.shirospringboot.model.UserSys">
+        select * from user_sys where username=#{username}
+    </select>
+</mapper>

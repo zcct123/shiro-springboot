@@ -1,6 +1,7 @@
 package com.zc.shirospringboot.config;
 
 import com.zc.shirospringboot.shiro.realms.CustomerRealm;
+import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -27,8 +28,11 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
         //配置系统的寿险资源
         Map<String,String> map = new HashMap<String, String>();
-        map.put("/index.jsp","authc"); //authc 代表请求这个资源需要认证和授权
-        map.put("/","authc"); //authc 代表请求这个资源需要认证和授权
+        map.put("/user/login","anon"); //auon 公共资源
+        map.put("/login.jsp","anon"); //auon 公共资源
+        map.put("/register.jsp","anon");
+        map.put("/user/register","anon"); //auon 公共资源
+        map.put("/**","authc"); //authc 代表请求这个资源需要认证和授权
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
 
@@ -51,6 +55,13 @@ public class ShiroConfig {
     public Realm getRealm()
     {
         CustomerRealm customerRealm = new CustomerRealm();
+        //修改凭证校验匹配器
+        HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
+        credentialsMatcher.setHashAlgorithmName("md5");
+
+        //设置散列次数
+        credentialsMatcher.setHashIterations(1024);
+        customerRealm.setCredentialsMatcher(credentialsMatcher);
         return customerRealm;
     }
 }
