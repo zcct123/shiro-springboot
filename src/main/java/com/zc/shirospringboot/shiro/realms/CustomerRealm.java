@@ -26,10 +26,25 @@ public class CustomerRealm extends AuthorizingRealm {
     UserService userService;
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        //获取身份信息
+        UserSys userSys = (UserSys)principalCollection.getPrimaryPrincipal();
 
+        log.info("当前用户信息："+userSys.toString());
 
-        SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+        //根据主身份信息获取角色信息 和 权限信息
+
+        if("zczc".equals(userSys.getUsername()))
+        {
+            SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+
+            //添加身份
+            simpleAuthorizationInfo.addRole("admin");
+          //  simpleAuthorizationInfo.addRole("user");
+            //simpleAuthorizationInfo.add
         return  simpleAuthorizationInfo;
+        }
+
+        return  null;
     }
 
     @Override
